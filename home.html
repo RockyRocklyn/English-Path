@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The English Path | Interactive Learning Assistant & Quiz Engine</title>
+  <meta name="description" content="An interactive English grammar learning assistant with multi-type quizzes, instant rule feedback, progress tracking, and custom reviewer maker.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Bubbly CSS -->
+  <link rel="stylesheet" href="home.css">
+</head>
+<body class="flex flex-col min-h-screen relative justify-between">
+
+  <!-- Background Animated Bubbles -->
+  <ul class="bg-bubbles">
+    <li></li><li></li><li></li><li></li><li></li><li></li>
+  </ul>
+
+  <!-- Main Navigation Bar -->
+  <header class="relative z-20 w-full py-3 px-4 md:px-8 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+    
+    <!-- Logo & Brand -->
+    <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('dashboard')">
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-600 to-rose-400 text-white flex items-center justify-center text-xl shadow-md border-2 border-pink-200">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-black text-pink-600 tracking-wide font-bubbly">The English Path</h1>
+        <p class="text-xs text-pink-400 font-bold tracking-wider uppercase">Interactive Learning Assistant</p>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="flex items-center gap-1.5 bg-white/80 backdrop-blur-md p-1.5 rounded-full border-2 border-pink-200 shadow-sm overflow-x-auto max-w-full">
+      <button onclick="navigateTo('dashboard')" id="nav-dashboard" class="nav-tab active">
+        <i class="fa-solid fa-house"></i>
+        <span class="hidden sm:inline">Dashboard</span>
+      </button>
+      <button onclick="navigateTo('topics')" id="nav-topics" class="nav-tab">
+        <i class="fa-solid fa-list-check"></i>
+        <span class="hidden sm:inline">Topics</span>
+      </button>
+      <button onclick="navigateTo('reviewer')" id="nav-reviewer" class="nav-tab">
+        <i class="fa-solid fa-book-bookmark"></i>
+        <span class="hidden sm:inline">Reviewer</span>
+      </button>
+      <button onclick="navigateTo('progress')" id="nav-progress" class="nav-tab">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span class="hidden sm:inline">Progress</span>
+      </button>
+      <button onclick="navigateTo('history')" id="nav-history" class="nav-tab">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span class="hidden sm:inline">History</span>
+      </button>
+    </nav>
+
+    <!-- User Badges & Utilities -->
+    <div class="flex items-center gap-2.5">
+      <!-- Streak Badge -->
+      <div class="streak-badge px-3.5 py-1.5 text-xs md:text-sm" title="Daily Learning Streak">
+        <i class="fa-solid fa-fire text-amber-500 flame-pulse"></i>
+        <span id="header-streak">1</span> <span class="hidden sm:inline">Day Streak</span>
+      </div>
+
+      <!-- XP Badge -->
+      <div class="bg-pink-100/90 text-pink-700 font-black px-3.5 py-1.5 rounded-full border-2 border-pink-200 text-xs md:text-sm flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-star text-amber-400"></i>
+        <span id="header-xp">0</span> XP
+      </div>
+
+      <!-- Sound Toggle -->
+      <button onclick="toggleAudio()" id="sound-btn" class="w-9 h-9 rounded-full bg-white text-pink-600 border-2 border-pink-200 flex items-center justify-center hover:bg-pink-50 transition-all shadow-sm" title="Toggle Sound">
+        <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+      </button>
+
+      <!-- Profile Avatar Button -->
+      <button onclick="openProfileModal()" class="w-9 h-9 rounded-full bg-pink-500 text-white flex items-center justify-center text-lg shadow-sm border-2 border-pink-200 hover:scale-105 transition-transform" id="header-avatar-btn" title="Edit Profile">
+        <span id="header-avatar-emoji">🌸</span>
+      </button>
+    </div>
+
+  </header>
+
+  <!-- Main Workspace Views Container -->
+  <main class="relative z-10 flex-grow flex items-center justify-center p-3 md:p-6">
+    <div class="w-full max-w-4xl">
+
+      <!-- ================================================================== -->
+      <!-- VIEW 1: DASHBOARD -->
+      <!-- ================================================================== -->
+      <section id="dashboard-view" class="bubbly-card p-6 md:p-8 space-y-6">
+        
+        <!-- Hero Greeting -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b-2 border-pink-100">
+          <div class="space-y-1 text-center md:text-left">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-pink-700 font-bubbly">
+              Welcome back, <span id="dash-player-name" class="text-pink-500">Learner</span>! <span id="dash-player-avatar">🌸</span>
+            </h2>
+            <p class="text-sm font-bold text-pink-600">
+              Your English grammar journey is active! Keep your daily streak burning strong.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="quickStartQuiz()" class="bubbly-btn py-3 px-6 text-sm md:text-base font-bold flex items-center gap-2">
+              <i class="fa-solid fa-bolt"></i>
+              <span>Quick Quiz</span>
+            </button>
+            <button onclick="navigateTo('reviewer')" class="bubbly-btn-secondary py-3 px-5 text-sm font-bold flex items-center gap-2">
+              <i class="fa-solid fa-pen-ruler"></i>
+              <span>Create Reviewer</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Smart Study Recommendation Callout -->
+        <div id="dash-recommendation-card" class="bg-gradient-to-r from-amber-50 to-pink-50 border-2 border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl flex-shrink-0 border border-amber-300">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <div>
+              <span class="text-xs font-black uppercase tracking-wider text-amber-700 bg-amber-200/70 px-2 py-0.5 rounded-full">
+                Smart Recommendation
+              </span>
+              <h3 id="dash-rec-title" class="text-base md:text-lg font-bold text-pink-950 mt-1">Recommended: Subject-Verb Agreement</h3>
+              <p id="dash-rec-msg" class="text-xs md:text-sm text-pink-700 font-semibold">Boost your mastery by answering targeted application questions.</p>
+            </div>
+          </div>
+          <button id="dash-rec-btn" onclick="startRecommendedQuiz()" class="bubbly-btn py-2.5 px-5 text-xs font-bold whitespace-nowrap flex items-center gap-1.5">
+            <span>Practice Now</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Topic Mastery Quick Overview -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-extrabold text-pink-900 font-bubbly">Learning Paths Mastery</h3>
+            <button onclick="navigateTo('progress')" class="text-xs font-bold text-pink-600 hover:text-pink-800 underline">
+              View Detailed Analytics &rarr;
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5" id="dash-mastery-grid">
+            <!-- Rendered dynamically by home.js -->
+          </div>
+        </div>
+
+        <!-- Recent Activity Log Preview -->
+        <div class="space-y-3 pt-2">
+          <h3 class="text-lg font-extrabold text-pink-900 font-bubbly">Recent Quizzes</h3>
+          <div id="dash-recent-history" class="space-y-2">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- VIEW 2: TOPIC SELECTION -->
+      <!-- ================================================================== -->
+      <section id="topics-view" class="hidden bubbly-card p-6 md:p-8 space-y-6">
+        
+        <div class="text-center space-y-2">
+          <h2 class="text-2xl md:text-3xl font-extrabold text-pink-600 font-bubbly">Select Quiz Path</h2>
+          <p class="text-pink-700 font-semibold text-sm md:text-base">
+            Choose a topic and select your difficulty tier to begin answering interactive questions:
+          </p>
+
+          <!-- Difficulty Filter Pills -->
+          <div class="flex items-center justify-center gap-2 pt-2 flex-wrap">
+            <button onclick="setDifficultyFilter('all')" id="diff-all" class="px-4 py-1.5 rounded-full text-xs font-extrabold border-2 border-pink-400 bg-pink-500 text-white shadow-sm">
+              All Levels
+            </button>
+            <button onclick="setDifficultyFilter('beginner')" id="diff-beginner" class="px-4 py-1.5 rounded-full text-xs font-extrabold border-2 border-pink-200 bg-white text-pink-700 hover:bg-pink-50">
+              🌱 Beginner
+            </button>
+            <button onclick="setDifficultyFilter('intermediate')" id="diff-intermediate" class="px-4 py-1.5 rounded-full text-xs font-extrabold border-2 border-pink-200 bg-white text-pink-700 hover:bg-pink-50">
+              ⭐ Intermediate
+            </button>
+            <button onclick="setDifficultyFilter('advanced')" id="diff-advanced" class="px-4 py-1.5 rounded-full text-xs font-extrabold border-2 border-pink-200 bg-white text-pink-700 hover:bg-pink-50">
+              🔥 Advanced
+            </button>
+          </div>
+        </div>
+
+        <!-- Built-in Topics Cards Container -->
+        <div class="grid grid-cols-1 gap-4" id="topics-list-container">
+          <!-- Rendered dynamically by home.js -->
+        </div>
+
+        <!-- Custom Reviewer Decks Section -->
+        <div class="pt-4 border-t-2 border-pink-100 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-extrabold text-pink-900 font-bubbly flex items-center gap-2">
+              <i class="fa-solid fa-bookmark text-pink-500"></i>
+              <span>My Custom Reviewer Decks</span>
+            </h3>
+            <button onclick="navigateTo('reviewer')" class="text-xs font-bold text-pink-600 hover:text-pink-800 underline">
+              + New Reviewer
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="custom-reviewer-decks-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- VIEW 3: INTERACTIVE QUIZ WORKSPACE -->
+      <!-- ================================================================== -->
+      <section id="quiz-view" class="hidden bubbly-card p-6 md:p-8 space-y-6">
+        
+        <!-- Quiz Header Info & Progress Bar -->
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs md:text-sm font-bold text-pink-700">
+            <div class="flex items-center gap-2">
+              <span id="quiz-topic-badge" class="px-3.5 py-1 rounded-full bg-pink-100 border border-pink-300 text-pink-700 flex items-center gap-1.5">
+                <i id="quiz-topic-icon" class="fa-solid fa-shapes"></i>
+                <span id="quiz-topic-title">Parts of Speech</span>
+              </span>
+              <span id="quiz-difficulty-badge" class="px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-800 font-extrabold uppercase text-xs">
+                Beginner
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span id="quiz-type-badge" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full border border-purple-200 font-extrabold text-xs uppercase">
+                Multiple Choice
+              </span>
+              <span class="bg-pink-50 text-pink-700 px-3 py-1 rounded-full border border-pink-200">
+                Question <span id="current-q-num">1</span> / <span id="total-q-num">10</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-pill-outer">
+            <div id="quiz-progress-bar" class="progress-pill-inner" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <!-- Question Sentence Box -->
+        <div id="question-sentence-box" class="bg-pink-50/90 border-2 border-pink-200 rounded-2xl p-4 md:p-5 text-center shadow-inner space-y-2">
+          <span class="inline-block text-xs font-black tracking-wider uppercase text-pink-600 bg-white px-2.5 py-0.5 rounded-full border border-pink-200">
+            Context Sentence / Target
+          </span>
+          <p id="question-sentence" class="text-pink-950 font-bold text-base md:text-xl leading-relaxed">
+            Sentence text goes here...
+          </p>
+        </div>
+
+        <!-- Question Prompt Text -->
+        <div class="text-center">
+          <h3 id="question-text" class="text-base md:text-lg font-extrabold text-pink-900 font-bubbly">
+            Prompt text goes here...
+          </h3>
+        </div>
+
+        <!-- DYNAMIC INTERACTIVE QUESTION CONTENT CONTAINER -->
+        <div id="dynamic-question-container" class="space-y-4">
+          <!-- Dynamically populated per question type (MCQ, Fill blank, Matching, TF, Short answer) -->
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- 4-PART INSTANT LEARNING FEEDBACK CARD -->
+        <!-- ============================================================== -->
+        <div id="feedback-container" class="hidden transition-all duration-300 pt-2">
+          <div class="feedback-box p-5 md:p-6 space-y-4" id="feedback-box">
+            
+            <!-- Part 0: Status Indicator -->
+            <div class="flex items-center gap-3 pb-3 border-b-2 border-pink-100" id="feedback-status-header">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl" id="feedback-status-icon-box">
+                <i id="feedback-status-icon" class="fa-solid fa-circle-check"></i>
+              </div>
+              <div>
+                <h4 id="feedback-status-title" class="text-lg font-black font-bubbly">Correct Answer!</h4>
+                <p id="feedback-status-sub" class="text-xs font-bold text-pink-700">Instant learning breakdown:</p>
+              </div>
+            </div>
+
+            <!-- Part 1: Grammatical Rule Explanation -->
+            <div class="bg-pink-50/70 border border-pink-200 rounded-xl p-3.5 space-y-1">
+              <span class="text-xs font-black text-pink-600 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-book-open text-pink-500"></i>
+                <span>Rule & Concept</span>
+              </span>
+              <p id="feedback-rule-text" class="text-pink-950 font-semibold text-sm leading-relaxed">
+                Detailed grammatical rule explanation.
+              </p>
+            </div>
+
+            <!-- Part 2: Example Sentence Scenario -->
+            <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 space-y-1">
+              <span class="text-xs font-black text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-quote-left text-amber-500"></i>
+                <span>Example in Context</span>
+              </span>
+              <p id="feedback-example-text" class="text-amber-950 font-semibold text-sm italic leading-relaxed">
+                Example sentence showing correct usage.
+              </p>
+            </div>
+
+            <!-- Part 3: Memory Tip / Mnemonic -->
+            <div class="bg-purple-50/80 border border-purple-200 rounded-xl p-3.5 space-y-1">
+              <span class="text-xs font-black text-purple-700 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i>
+                <span>Memory Tip & Mnemonic</span>
+              </span>
+              <p id="feedback-tip-text" class="text-purple-950 font-bold text-sm leading-relaxed">
+                Quick trick to remember this concept forever.
+              </p>
+            </div>
+
+            <!-- Action CTA: Next Question or Complete -->
+            <div class="pt-2 text-right">
+              <button 
+                id="next-question-btn" 
+                onclick="handleNextQuestion()"
+                class="bubbly-btn px-8 py-3.5 text-base font-bold inline-flex items-center gap-2"
+              >
+                <span id="next-btn-text">Next Question</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- VIEW 4: RESULTS SUMMARY -->
+      <!-- ================================================================== -->
+      <section id="results-view" class="hidden bubbly-card p-6 md:p-8 text-center space-y-6">
+        
+        <div class="inline-flex p-4 rounded-full bg-pink-100 text-pink-500 mb-1 border-2 border-pink-200 shadow-inner">
+          <i class="fa-solid fa-trophy text-5xl text-amber-400"></i>
+        </div>
+
+        <div class="space-y-1">
+          <h2 class="text-3xl font-extrabold text-pink-600 font-bubbly">Path Completed!</h2>
+          <p class="text-pink-700 font-bold text-base md:text-lg">
+            Outstanding work, <span id="results-player-name" class="text-pink-500">Learner</span>!
+          </p>
+        </div>
+
+        <!-- Score Breakdown Box -->
+        <div class="bg-pink-50 border-2 border-pink-200 rounded-3xl p-5 space-y-4 max-w-lg mx-auto shadow-inner">
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p class="text-xs font-bold text-pink-500 uppercase tracking-wider">Score</p>
+              <p class="text-2xl md:text-3xl font-black text-pink-600 font-bubbly"><span id="results-score">0</span> pts</p>
+            </div>
+            <div class="border-x-2 border-pink-200">
+              <p class="text-xs font-bold text-pink-500 uppercase tracking-wider">Accuracy</p>
+              <p class="text-2xl md:text-3xl font-black text-pink-600 font-bubbly"><span id="results-accuracy">100%</span></p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-pink-500 uppercase tracking-wider">XP Gained</p>
+              <p class="text-2xl md:text-3xl font-black text-amber-500 font-bubbly">+<span id="results-xp">50</span></p>
+            </div>
+          </div>
+
+          <div class="bg-white p-3 rounded-2xl border border-pink-200 text-sm font-semibold text-pink-800 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-medal text-pink-400 text-lg"></i>
+            <span id="results-badge-text">Grammar Champion!</span>
+          </div>
+        </div>
+
+        <!-- Question Review Accordion -->
+        <div class="space-y-2 max-w-lg mx-auto text-left">
+          <button onclick="toggleResultsReview()" class="w-full bg-white p-3.5 rounded-2xl border-2 border-pink-200 font-bold text-pink-800 text-sm flex items-center justify-between hover:bg-pink-50">
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-clipboard-check text-pink-500"></i>
+              <span>Review All Quiz Questions & Answers</span>
+            </span>
+            <i id="results-review-toggle-icon" class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div id="results-review-list" class="hidden space-y-3 pt-2">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Buttons CTA -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2 max-w-md mx-auto">
+          <button onclick="navigateTo('topics')" class="bubbly-btn-secondary py-3 px-5 font-bold text-sm flex-1 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-list-ul"></i>
+            <span>Choose Topic</span>
+          </button>
+          <button onclick="restartCurrentQuiz()" class="bubbly-btn py-3 px-5 font-bold text-sm flex-1 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>Try Again</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- VIEW 5: PROGRESS TRACKER & ANALYTICS -->
+      <!-- ================================================================== -->
+      <section id="progress-view" class="hidden bubbly-card p-6 md:p-8 space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-3 border-b-2 border-pink-100">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-pink-600 font-bubbly">Learning Progress Tracker</h2>
+            <p class="text-pink-700 font-bold text-sm">Track your grammar accuracy, mastery rankings, and areas for improvement.</p>
+          </div>
+          <button onclick="navigateTo('topics')" class="bubbly-btn py-2.5 px-5 text-xs font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-play"></i>
+            <span>Start Practice</span>
+          </button>
+        </div>
+
+        <!-- Top Metrics Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          <div class="bg-white p-4 rounded-2xl border-2 border-pink-200 text-center shadow-sm">
+            <p class="text-xs font-bold text-pink-400 uppercase">Total Quizzes</p>
+            <p id="prog-total-quizzes" class="text-2xl md:text-3xl font-black text-pink-600 font-bubbly">0</p>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border-2 border-pink-200 text-center shadow-sm">
+            <p class="text-xs font-bold text-pink-400 uppercase">Avg Accuracy</p>
+            <p id="prog-avg-accuracy" class="text-2xl md:text-3xl font-black text-emerald-600 font-bubbly">0%</p>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border-2 border-pink-200 text-center shadow-sm">
+            <p class="text-xs font-bold text-pink-400 uppercase">Daily Streak</p>
+            <p id="prog-streak" class="text-2xl md:text-3xl font-black text-amber-500 font-bubbly">🔥 1</p>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border-2 border-pink-200 text-center shadow-sm">
+            <p class="text-xs font-bold text-pink-400 uppercase">Total XP</p>
+            <p id="prog-xp" class="text-2xl md:text-3xl font-black text-purple-600 font-bubbly">0</p>
+          </div>
+        </div>
+
+        <!-- Topics Mastery Breakdown -->
+        <div class="space-y-3">
+          <h3 class="text-lg font-extrabold text-pink-900 font-bubbly">Topic-by-Topic Mastery</h3>
+          <div id="prog-topics-list" class="space-y-3">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Needs Improvement Alert Box -->
+        <div id="prog-needs-improvement-box" class="hidden bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 space-y-2">
+          <div class="flex items-center gap-2 font-black text-rose-700 text-sm">
+            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+            <span>Topics That Need Practice (< 70% Accuracy)</span>
+          </div>
+          <div id="prog-weak-topics-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- VIEW 6: PERSONALIZED REVIEWER MAKER -->
+      <!-- ================================================================== -->
+      <section id="reviewer-view" class="hidden bubbly-card p-6 md:p-8 space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-3 border-b-2 border-pink-100">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-pink-600 font-bubbly">Personalized Reviewer Maker</h2>
+            <p class="text-pink-700 font-bold text-sm">
+              Create your own custom study guides, notes, definitions, and questions!
+            </p>
+          </div>
+          <button onclick="openReviewerModal()" class="bubbly-btn py-3 px-5 text-sm font-bold flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i>
+            <span>Create New Reviewer</span>
+          </button>
+        </div>
+
+        <!-- Reviewers List Container -->
+        <div id="reviewers-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Rendered dynamically -->
+        </div>
+
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- VIEW 7: QUIZ HISTORY LOG -->
+      <!-- ================================================================== -->
+      <section id="history-view" class="hidden bubbly-card p-6 md:p-8 space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-3 border-b-2 border-pink-100">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-pink-600 font-bubbly">Quiz History & Logs</h2>
+            <p class="text-pink-700 font-bold text-sm">Review your past attempts and track score improvements over time.</p>
+          </div>
+        </div>
+
+        <!-- History Table / Cards -->
+        <div id="history-list-container" class="space-y-3">
+          <!-- Rendered dynamically -->
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: PROFILE & AVATAR EDIT -->
+  <!-- ==================================================================== -->
+  <div id="profile-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bubbly-card p-6 md:p-8 w-full max-w-md space-y-5 bg-white">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-extrabold text-pink-700 font-bubbly">Student Profile</h3>
+        <button onclick="closeProfileModal()" class="text-pink-400 hover:text-pink-700 text-xl font-bold">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveProfile(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-pink-800 mb-1">Your Name:</label>
+          <input type="text" id="profile-name-input" required maxlength="25" class="short-answer-input text-base" placeholder="Enter student name...">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-pink-800 mb-1.5">Choose Avatar Emoji:</label>
+          <div class="flex items-center justify-around bg-pink-50 p-2.5 rounded-2xl border border-pink-200 text-2xl" id="avatar-picker">
+            <button type="button" onclick="selectAvatar('🌸')" class="hover:scale-125 transition-transform">🌸</button>
+            <button type="button" onclick="selectAvatar('🐱')" class="hover:scale-125 transition-transform">🐱</button>
+            <button type="button" onclick="selectAvatar('⭐')" class="hover:scale-125 transition-transform">⭐</button>
+            <button type="button" onclick="selectAvatar('📚')" class="hover:scale-125 transition-transform">📚</button>
+            <button type="button" onclick="selectAvatar('🦊')" class="hover:scale-125 transition-transform">🦊</button>
+            <button type="button" onclick="selectAvatar('🍀')" class="hover:scale-125 transition-transform">🍀</button>
+          </div>
+        </div>
+
+        <button type="submit" class="bubbly-btn w-full py-3 text-base font-bold">
+          Save Profile
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: REVIEWER CREATOR & EDITOR -->
+  <!-- ==================================================================== -->
+  <div id="reviewer-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bubbly-card p-6 md:p-8 w-full max-w-2xl space-y-5 bg-white my-8 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b-2 border-pink-100 pb-3">
+        <h3 class="text-xl font-extrabold text-pink-700 font-bubbly flex items-center gap-2">
+          <i class="fa-solid fa-pen-nib text-pink-500"></i>
+          <span id="rev-modal-title">Create Personalized Reviewer</span>
+        </h3>
+        <button onclick="closeReviewerModal()" class="text-pink-400 hover:text-pink-700 text-xl font-bold">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveReviewerForm(event)" class="space-y-4">
+        <input type="hidden" id="rev-edit-id" value="">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-pink-800 mb-1">Reviewer Title:</label>
+            <input type="text" id="rev-title-input" required class="short-answer-input text-sm" placeholder="e.g. Master Subject-Verb Guide">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-pink-800 mb-1">Category / Topic:</label>
+            <input type="text" id="rev-topic-input" required class="short-answer-input text-sm" placeholder="e.g. Subject-Verb Agreement">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-pink-800 mb-1">Summary Notes & Rules:</label>
+          <textarea id="rev-notes-input" rows="2" class="short-answer-input text-sm" placeholder="Write key concepts, rules, or insights..."></textarea>
+        </div>
+
+        <!-- Key Definitions Builder -->
+        <div class="bg-pink-50/70 p-4 rounded-2xl border border-pink-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black uppercase text-pink-700">Glossary & Definitions</span>
+            <button type="button" onclick="addDefinitionRow()" class="text-xs font-bold text-pink-600 hover:text-pink-800 underline">
+              + Add Term
+            </button>
+          </div>
+          <div id="rev-definitions-container" class="space-y-2">
+            <!-- Dynamic rows -->
+          </div>
+        </div>
+
+        <!-- Custom Questions Builder -->
+        <div class="bg-pink-50/70 p-4 rounded-2xl border border-pink-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black uppercase text-pink-700">Custom Quiz Questions (Generated into Quizzes!)</span>
+            <button type="button" onclick="addCustomQuestionRow()" class="text-xs font-bold text-pink-600 hover:text-pink-800 underline">
+              + Add Question
+            </button>
+          </div>
+          <div id="rev-questions-container" class="space-y-3">
+            <!-- Dynamic question cards -->
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button type="button" onclick="closeReviewerModal()" class="bubbly-btn-secondary py-2.5 px-5 text-sm font-bold">
+            Cancel
+          </button>
+          <button type="submit" class="bubbly-btn py-2.5 px-6 text-sm font-bold">
+            Save Reviewer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: STUDY FLASHCARD VIEWER -->
+  <!-- ==================================================================== -->
+  <div id="study-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bubbly-card p-6 md:p-8 w-full max-w-xl space-y-5 bg-white">
+      
+      <div class="flex items-center justify-between border-b-2 border-pink-100 pb-3">
+        <div>
+          <h3 id="study-title" class="text-lg md:text-xl font-extrabold text-pink-700 font-bubbly">Reviewer Flashcards</h3>
+          <p id="study-category" class="text-xs font-bold text-pink-400">Category</p>
+        </div>
+        <button onclick="closeStudyModal()" class="text-pink-400 hover:text-pink-700 text-xl font-bold">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Flashcard Display Area -->
+      <div id="study-cards-wrapper" class="space-y-4">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t-2 border-pink-100">
+        <button onclick="closeStudyModal()" class="bubbly-btn-secondary py-2 px-4 text-xs font-bold">
+          Done Studying
+        </button>
+        <button id="study-launch-quiz-btn" class="bubbly-btn py-2 px-5 text-xs font-bold flex items-center gap-1.5">
+          <i class="fa-solid fa-play"></i>
+          <span>Quiz This Reviewer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simple Footer -->
+  <footer class="relative z-10 w-full py-4 text-center text-xs font-bold text-pink-500">
+    <p>The English Path &copy; Interactive Learning Assistant &bull; Complete Student Study Companion</p>
+  </footer>
+
+  <!-- JS Dependencies -->
+  <script src="audio.js"></script>
+  <script src="storage.js"></script>
+  <script src="questions.js"></script>
+  <script src="home.js"></script>
+</body>
+</html>
